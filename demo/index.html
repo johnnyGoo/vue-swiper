@@ -109,7 +109,7 @@
 <body v-cloak>
 <h2>vue-swiper demo</h2>
 <h3>Vertical</h3>
-<swiper id="swiper_vertical"
+<swiper id="swiper_vertical" style="width:300px;height:100px"
         :pagination-visible="true"
         @slide-change-start="onSlideChangeStart"
         @slide-change-end="onSlideChangeEnd"
@@ -122,7 +122,7 @@
 <h3>Horizontal</h3>
 <swiper id="swiper_horizontal"
         :pagination-visible="true"
-        direction="horizontal">
+        direction="horizontal" :resistance-ratio="0.1" :pagination-clickable="true" >
     <div v-for="slideText in slides" track-by="$index">{{slideText}}</div>
 </swiper>
 <h3>Append Child</h3>
@@ -168,6 +168,8 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
 <script src="../dist/vue-swiper.js"></script>
 <script>
+
+
     new Vue({
         el: 'body',
         components: {swiper: VueSwiper},

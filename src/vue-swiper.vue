@@ -46,6 +46,9 @@
             paginationClickable: {
                 type: Boolean,
                 default: false
+            },
+            resistanceRatio:{
+                default: 0.3
             }
         },
         data() {
@@ -126,6 +129,14 @@
             _onTouchMove(e) {
                 this.delta = this._getTouchPos(e) - this.startPos;
 
+                var max_back = this.currentPage == this.slideEls.length;
+                var min_back = this.currentPage == 1;
+
+                if (this.delta > 0 && min_back||this.delta < 0 && max_back) {
+                    this.delta =this.delta*this.resistanceRatio;
+                }
+
+
                 if (!this.performanceMode) {
                     if (this.isHorizontal()) {
                         this.translateX = this.startTranslateX + this.delta;
@@ -135,6 +146,10 @@
                         this.$emit('slider-move', this.translateY);
                     }
                 }
+
+
+
+
 
                 if (this.isVertical() || this.isHorizontal() && Math.abs(this.delta) > 0) {
                     e.preventDefault();
