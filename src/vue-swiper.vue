@@ -15,7 +15,7 @@
             <span class="swiper-pagination-bullet"
                   :class="{'active': $index+1===currentPage}"
                   v-for="slide in slideEls"
-                  @click="paginationClickable && setPage($index+1)"></span>
+                  @click="paginationClickable && setPage($index+1)" track-by="$index"></span>
         </div>
     </div>
 </template>
@@ -47,8 +47,12 @@
                 type: Boolean,
                 default: false
             },
-            resistanceRatio:{
+            resistanceRatio: {
                 default: 0.3
+            },
+            slides: {
+                type: Array,
+                default: []
             }
         },
         data() {
@@ -70,6 +74,15 @@
             this._onTouchMove = this._onTouchMove.bind(this);
             this._onTouchEnd = this._onTouchEnd.bind(this);
             this.slideEls = this.$els.swiperWrap.children;
+        },
+        watch: {
+            'slides': {
+                handler: function (val, oldVal) {
+                    var me = this;
+                    me.slideEls = [];
+                    me.slideEls = me.$els.swiperWrap.children;
+                }
+            }
         },
         methods: {
             next() {
@@ -132,8 +145,8 @@
                 var max_back = this.currentPage == this.slideEls.length;
                 var min_back = this.currentPage == 1;
 
-                if (this.delta > 0 && min_back||this.delta < 0 && max_back) {
-                    this.delta =this.delta*this.resistanceRatio;
+                if (this.delta > 0 && min_back || this.delta < 0 && max_back) {
+                    this.delta = this.delta * this.resistanceRatio;
                 }
 
 
@@ -146,9 +159,6 @@
                         this.$emit('slider-move', this.translateY);
                     }
                 }
-
-
-
 
 
                 if (this.isVertical() || this.isHorizontal() && Math.abs(this.delta) > 0) {

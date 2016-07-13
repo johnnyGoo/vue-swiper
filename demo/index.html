@@ -121,7 +121,7 @@
 </swiper>
 <h3>Horizontal</h3>
 <swiper id="swiper_horizontal"
-        :pagination-visible="true"
+        :pagination-visible="true" :slides="slides"
         direction="horizontal" :resistance-ratio="0.1" :pagination-clickable="true" >
     <div v-for="slideText in slides" track-by="$index">{{slideText}}</div>
 </swiper>
