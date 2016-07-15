@@ -65,11 +65,12 @@
         }
 
         .swiper-wrap > div:nth-child(3n + 1) {
-            background-color: yellowgreen;
+            background-color: rosybrown;
+
         }
 
         .swiper-wrap > div:nth-child(3n + 2) {
-            background-color: rosybrown;
+            background-color: yellowgreen;
         }
 
         #append_child {
@@ -109,31 +110,33 @@
 <body v-cloak>
 <h2>vue-swiper demo</h2>
 <h3>Vertical</h3>
-<swiper id="swiper_vertical" style="width:300px;height:100px"
+<vue-swiper id="swiper_vertical" style="width:300px;height:100px"
         :pagination-visible="true"
         @slide-change-start="onSlideChangeStart"
         @slide-change-end="onSlideChangeEnd"
         @slide-revert-start="onSlideRevertStart"
         @slide-revert-end="onSlideRevertEnd"
         @slider-move="onSliderMove">
-    <div class="slide-1">↑<br>o<br>↓</div>
-    <div v-for="n in [2,3]">Page {{n}}</div>
-</swiper>
+    <div class="banner slide-1">↑<br>o<br>↓</div>
+    <div class="banner" v-for="n in [2,3]">Page {{n}}</div>
+</vue-swiper>
 <h3>Horizontal</h3>
-<swiper id="swiper_horizontal"
-        :pagination-visible="true" :slides="slides"
-        direction="horizontal" :resistance-ratio="0.1" :pagination-clickable="true" >
-    <div v-for="slideText in slides" track-by="$index">{{slideText}}</div>
-</swiper>
+<vue-swiper id="swiper_horizontal"
+        :pagination-visible="true" :transition-time="0.3" :slides="slides" :page.sync="page" :autoplay='2000' :loop="false" :autoplay-disable-on-interaction="true"  :autoplay-stop-on-last="false"
+        direction="horizontal" :resistance-ratio="0.1" :pagination-clickable="true" :only-external="false" :allow-swipe-to-next="true" :allow-swipe-to-prev="true" >
+    <div class="banner"   v-for="slideText in slides"  track-by="$index">
+    <div v-show="$index+1==page">{{$index}}-{{page}}</div>
+    </div>
+</vue-swiper>
 <h3>Append Child</h3>
 <div id="append_child">
     <button @click="appendSlide('New Page!')">Append child to the horizontal slider</button>
 </div>
 <h3>Different children size</h3>
-<swiper id="swiper_children_size">
-    <div class="slide-1">↑<br>o<br>↓</div>
-    <div v-for="n in [2,3,4]" class="slide-{{n}}">Page {{n}}</div>
-</swiper>
+<vue-swiper id="swiper_children_size">
+    <div class="slide-1 banner">↑<br>o<br>↓</div>
+    <div v-for="n in [2,3,4]" class="banner slide-{{n}}">Page {{n}}</div>
+</vue-swiper>
 <!-- Nested swiper no supported yet-->
 <!--<h3>Nested</h3>-->
 <!--<swiper id="swiper_nested"-->
@@ -172,12 +175,16 @@
 
     new Vue({
         el: 'body',
-        components: {swiper: VueSwiper},
+        components: { VueSwiper},
         data: {
-            slides: ['← o →', 'Page 2', 'Page 3']
+            slides: ['← o →', 'Page 2', 'Page 3'],
+            id:0,
+            page:2
         },
+
         methods: {
             onSlideChangeStart: function (currentPage) {
+                this.id++;
                 console.log('onSlideChangeStart', currentPage);
             },
             onSlideChangeEnd: function (currentPage) {
