@@ -94,6 +94,10 @@
             transitionTime: {
                 type: Number,
                 default: 0.5
+            },
+            skip:{
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -158,7 +162,12 @@
             },
             'page': {
                 handler: function (val, oldVal) {
-                    this.setPage(val);
+                    if(this.skip==true){
+                        this.skipTo(val);
+                    }else{
+                        this.setPage(val);
+                    }
+
                 }
             }
         },

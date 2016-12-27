@@ -4,14 +4,14 @@
   "description": "Swiper component. Easy to use.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/weilao/vue-swiper.git"
+    "url": "git+https://github.com/johnnyGoo/vue-swiper.git"
   },
-  "author": "weilao",
+  "author": "Johnny Chen",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/weilao/vue-swiper/issues"
+    "url": "https://github.com/johnnyGoo/vue-swiper/issues"
   },
-  "homepage": "https://github.com/weilao/vue-swiper",
+  "homepage": "https://github.com/johnnyGoo/vue-swiper",
   "main": "dist/vue-swiper.js",
   "scripts": {
     "dev": "NODE_ENV=dev webpack-dev-server --inline --hot --host 0.0.0.0 --config webpack.config.js",
