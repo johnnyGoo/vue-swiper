@@ -46,10 +46,10 @@
             transform: scale(1);
         }
 
-        .swiper {
-            height: 200px;
-            margin-bottom: 80px;
-        }
+        /*.swiper {*/
+        /*height: 200px;*/
+        /*margin-bottom: 80px;*/
+        /*}*/
 
         .swiper-wrap > div {
             display: flex;
@@ -110,24 +110,42 @@
 <body v-cloak>
 <h2>vue-swiper demo</h2>
 <h3>Vertical</h3>
-<vue-swiper id="swiper_vertical" style="width:300px;height:100px"
-        :pagination-visible="true"
-        @slide-change-start="onSlideChangeStart"
-        @slide-change-end="onSlideChangeEnd"
-        @slide-revert-start="onSlideRevertStart"
-        @slide-revert-end="onSlideRevertEnd"
-        @slider-move="onSliderMove">
+<vue-swiper id="swiper_vertical" style="width:300px;height:100px" :slides="[1,2,3]"
+            :touch-anti="false"
+            :pagination-visible="true"
+            @slide-change-start="onSlideChangeStart"
+            @slide-change-end="onSlideChangeEnd"
+            @slide-revert-start="onSlideRevertStart"
+            @slide-revert-end="onSlideRevertEnd"
+            @slider-move="onSliderMove">
+    <div class="pr" style="width: 100%;height: 100%">
+        <vue-swiper style="width: 100%;height: 100%" id="swiper_horizontal"
+                    :pagination-visible="true" :transition-time="0.3" :slides="slides" :page.sync="page" :autoplay='0'
+                    :loop="false" :autoplay-disable-on-interaction="true" :autoplay-stop-on-last="false"
+                    direction="horizontal" :resistance-ratio="0.1" :pagination-clickable="true" :only-external="false"
+                    :allow-swipe-to-next="true" :allow-swipe-to-prev="true">
+            <div class="banner" v-for="slideText in slides" track-by="$index">
+                <div v-show="$index+1==page">{{$index}}-{{page}}</div>
+            </div>
+        </vue-swiper>
+    </div>
     <div class="banner slide-1">↑<br>o<br>↓</div>
     <div class="banner" v-for="n in [2,3]">Page {{n}}</div>
 </vue-swiper>
 <h3>Horizontal</h3>
 <vue-swiper id="swiper_horizontal"
-        :pagination-visible="true" :transition-time="0.3" :slides="slides" :page.sync="page" :autoplay='2000' :loop="false" :autoplay-disable-on-interaction="true"  :autoplay-stop-on-last="false"
-        direction="horizontal" :resistance-ratio="0.1" :pagination-clickable="true" :only-external="false" :allow-swipe-to-next="true" :allow-swipe-to-prev="true" >
-    <div class="banner"   v-for="slideText in slides"  track-by="$index">
-    <div v-show="$index+1==page">{{$index}}-{{page}}</div>
+            :pagination-visible="true" :transition-time="0.3" :slides="slides" :autoplay='2000' :loop="false"
+            :autoplay-disable-on-interaction="true" :autoplay-stop-on-last="false"
+            direction="horizontal" :resistance-ratio="0.1" :pagination-clickable="true" :only-external="false"
+            :allow-swipe-to-next.sync="next" :allow-swipe-to-prev.sync="prev" @slide-revert-end="onChanged">
+    <div class="banner" v-for="slideText in slides" track-by="$index">
+        <div>{{$index}}-{{1}}</div>
     </div>
 </vue-swiper>
+<h3 @click="page--">prev</h3>
+<h3 @click="page++">next</h3>
+
+
 <h3>Append Child</h3>
 <div id="append_child">
     <button @click="appendSlide('New Page!')">Append child to the horizontal slider</button>
@@ -168,21 +186,27 @@
 <!--</swiper>-->
 <!--</div>-->
 <!--</swiper>-->
-<script src="//cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
+<script src="../dist/vue.min.js"></script>
 <script src="../dist/vue-swiper.js"></script>
 <script>
 
 
     new Vue({
         el: 'body',
-        components: { VueSwiper},
+        components: {VueSwiper},
         data: {
             slides: ['← o →', 'Page 2', 'Page 3'],
-            id:0,
-            page:2
+            id: 0,
+            page: 2, prev: true, next: true
         },
 
         methods: {
+            onChanged: function (p) {
+//                console.log(p)
+//                this.prev = p > 2
+//                this.next = p <= 2
+
+            },
             onSlideChangeStart: function (currentPage) {
                 this.id++;
                 console.log('onSlideChangeStart', currentPage);

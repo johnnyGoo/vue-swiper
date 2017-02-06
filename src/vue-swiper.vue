@@ -6,7 +6,7 @@
          @wheel="_onWheel">
         <div class="swiper-wrap"
              v-el:swiper-wrap
-             :style="{'transition':'all '+realTransitionTime+'s ease','transform' : 'translate3d(' + translateX + 'px,' + translateY + 'px, 0)'}"
+             :style="{'flex-direction':direction=='vertical'?'column':'row','transition':'all '+realTransitionTime+'s ease','transform' : 'translate3d(' + translateX + 'px,' + translateY + 'px, 0)'}"
              @transitionend="_onTransitionEnd">
             <div class="clone_end" v-show="loop"></div>
             <slot></slot>
@@ -17,7 +17,7 @@
              v-show="paginationVisible">
             <span class="swiper-pagination-bullet"
                   :class="{'active': $index+1===currentPage}"
-                  v-for="slide in totalPage"
+                  v-for="slide in totalPage" :style="{'cursor':paginationClickable?'pointer':'auto'}"
                   @click="paginationClickable && clickPage($index+1)" track-by="$index"></span>
         </div>
     </div>
@@ -27,6 +27,8 @@
     const VERTICAL = 'vertical';
     const HORIZONTAL = 'horizontal';
     import {Event} from './smart.min'
+
+    var active;
 
 
 
@@ -95,7 +97,11 @@
                 type: Number,
                 default: 0.5
             },
-            skip:{
+            skip: {
+                type: Boolean,
+                default: false
+            },
+            touchAnti: {
                 type: Boolean,
                 default: false
             }
@@ -162,9 +168,17 @@
             },
             'page': {
                 handler: function (val, oldVal) {
-                    if(this.skip==true){
+                    if (val < 1) {
+                        this.page = 1
+                        return;
+                    } else if (val > this.totalPage) {
+                        this.page = this.totalPage
+                        return;
+                    }
+
+                    if (this.skip == true) {
                         this.skipTo(val);
-                    }else{
+                    } else {
                         this.setPage(val);
                     }
 
@@ -246,6 +260,8 @@
                 }
             },
             setPage(page) {
+
+
                 var propName, translateName;
                 this.lastPage = this.currentPage;
                 this.currentPage = page;
@@ -264,6 +280,10 @@
                 }, 0);
 
                 this._onTransitionStart();
+                if(this.autoplay){
+                    this.stopAutoPlay();
+                    this.startAutoPlay();
+                }
             },
             isHorizontal() {
                 return this.direction === HORIZONTAL;
@@ -277,6 +297,7 @@
                 if (this.onlyExternal) {
                     return;
                 }
+
                 this.startPos = this._getTouchPos(e);
                 this.delta = 0;
                 this.startTranslateX = this.translateX;
@@ -291,7 +312,21 @@
                 document.addEventListener('mouseup', this._onTouchEnd, false);
             },
             _onTouchMove(e) {
+
+                if(active&&active!=this){
+                    return;
+                }
                 this.delta = this._getTouchPos(e) - this.startPos;
+                if(Math.abs(this.delta)>1){
+                    active=this;
+                }else{
+                    if(active==this){
+                        active=null;
+                        this.delta=0;
+                    }
+
+
+                }
 
                 if (!this.loop && !this.allowSwipeToNext && this.delta < 0) {
                     return;
@@ -363,23 +398,41 @@
                 }
             },
             _revert() {
+
                 this.setPage(this.currentPage);
             },
             _getTouchPos(e) {
                 var key = this.isHorizontal() ? 'pageX' : 'pageY';
-                return e.changedTouches ? e.changedTouches[0][key] : e[key];
+                var pre = 1;
+                if (this.touchAnti) {
+                    if (key == 'pageX') {
+                        key = 'pageY'
+                    } else {
+                        key = 'pageX'
+                        pre = -1
+                    }
+                }
+
+
+                return pre * (e.changedTouches ? e.changedTouches[0][key] : e[key]);
             },
             _onTransitionStart() {
-
+                var me = this;
+//                console.log('_onTransitionStart', this.lastPage, this.currentPage)
                 this.transitioning = true;
                 if (this._isPageChanged()) {
                     this.$emit('slide-change-start', this.currentPage);
                 } else {
                     this.$emit('slide-revert-start', this.currentPage);
                 }
+                setTimeout(function () {
+                    if (me.transitioning == false) {
+                        me._onTransitionEnd()
+                    }
+                }, 10)
             },
             _onTransitionEnd() {
-
+//                console.log('_onTransitionEnd', this.lastPage, this.currentPage)
                 if (this.autoplayDisableOnInteraction == false && this.auto_play_stoped) {
                     this.startAutoPlay();
                 } else if (!this.loop && this.autoplayStopOnLast && this.currentPage == this.slideEls.length) {
@@ -395,6 +448,7 @@
                 this._fixPage();
             },
             _isPageChanged() {
+
                 return this.lastPage !== this.currentPage;
             }
         }
